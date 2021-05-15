@@ -6,6 +6,7 @@ pub struct Remote {
     pub host: String,
     pub ssh_port: u16,
     pub temp_dir: String,
+    pub disable_pty: bool,
     pub env: String,
 }
 
@@ -15,6 +16,7 @@ struct PartialRemote {
     pub host: String,
     pub ssh_port: Option<u16>,
     pub temp_dir: Option<String>,
+    pub disable_pty: bool,
     pub env: Option<String>,
 }
 
@@ -25,6 +27,7 @@ impl Default for Remote {
             host: String::new(),
             ssh_port: 22,
             temp_dir: "~/remote-builds".to_string(),
+            disable_pty: false,
             env: "/etc/profile".to_string(),
         }
     }
@@ -37,11 +40,13 @@ impl From<PartialRemote> for Remote {
         let ssh_port = minimal_remote.ssh_port.unwrap_or(default.ssh_port);
         let temp_dir = minimal_remote.temp_dir.unwrap_or(default.temp_dir);
         let env = minimal_remote.env.unwrap_or(default.env);
+        let disable_pty = minimal_remote.disable_pty;
         Remote {
             name,
             host: minimal_remote.host,
             ssh_port,
             temp_dir,
+            disable_pty,
             env,
         }
     }
@@ -101,6 +106,7 @@ impl Config {
             host: opts.host.clone().unwrap_or(blueprint_remote.host),
             ssh_port: opts.ssh_port.clone().unwrap_or(blueprint_remote.ssh_port),
             temp_dir: opts.temp_dir.clone().unwrap_or(blueprint_remote.temp_dir),
+            disable_pty: opts.disable_pty,
             env: opts.env.clone().unwrap_or(blueprint_remote.env),
         })
     }

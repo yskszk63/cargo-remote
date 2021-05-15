@@ -28,6 +28,10 @@ pub struct RemoteOpts {
     #[structopt(short, long = "remote-temp-dir")]
     temp_dir: Option<String>,
 
+    /// Disable pty with remote build
+    #[structopt(short = "T", long = "disable-pty")]
+    disable_pty: bool,
+
     #[structopt(
         short = "e",
         long = "env",
@@ -190,7 +194,7 @@ fn main() {
     info!("Starting build process.");
     let output = Command::new("ssh")
         .args(&["-p", &remote.ssh_port.to_string()])
-        .arg("-t")
+        .arg(if remote.disable_pty { "-T" } else { "-t" })
         .arg(&build_server)
         .arg(build_command)
         .stdout(Stdio::inherit())
